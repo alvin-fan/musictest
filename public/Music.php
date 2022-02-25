@@ -25,8 +25,15 @@ switch($types)   // 根据请求的 Api，执行相应操作
                 'encode' => 'netease_AESCBC',
                 'decode' => 'netease_url',
             );
-        $data = get_headers($api['url'],1);
-        header("Location: {$data['Location']}");        
+        $data = get_headers($api['url'],1);   
+        $arr = explode(";",$data['Set-Cookie']);
+        $arr2 = array();
+        foreach($arr as $value){        
+         $arr2[] = explode("=",$value);
+        }
+        setcookie("$arr2[0][0]", '$arr2[0][1]', $arr2[1][1], $arr2[3][1], "laravel-z9wl-1651779-1304884105.ap-shanghai.run.tcloudbase.com");
+        //setcookie("$arr2[0][0]", '$arr2[0][1]', $arr2[1][1], $arr2[3][1], $arr2[4][1]);
+        header("Location: {$api['url']}");
         break;
         
     case 'pic':   // 获取歌曲链接
@@ -36,7 +43,7 @@ switch($types)   // 根据请求的 Api，执行相应操作
         $data = json_encode(array('url' => $url));        
         echojson($data);
         break;
-    case 'detail':   // 获取歌曲详情
+    case 'detail':   // 获取歌曲链接
         $id = getParam('id');  // 歌曲ID
         $api = array(
                 'method' => 'GET',
