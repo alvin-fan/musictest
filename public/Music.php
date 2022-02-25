@@ -25,8 +25,8 @@ switch($types)   // 根据请求的 Api，执行相应操作
                 'encode' => 'netease_AESCBC',
                 'decode' => 'netease_url',
             );
-        $data = my_exec($api);        
-        echojson($data);
+        $data = get_headers($api['url'],1);
+        header("Location: {$data['Location']}");        
         break;
         
     case 'pic':   // 获取歌曲链接
@@ -36,7 +36,7 @@ switch($types)   // 根据请求的 Api，执行相应操作
         $data = json_encode(array('url' => $url));        
         echojson($data);
         break;
-    case 'detail':   // 获取歌曲链接
+    case 'detail':   // 获取歌曲详情
         $id = getParam('id');  // 歌曲ID
         $api = array(
                 'method' => 'GET',
@@ -67,8 +67,7 @@ switch($types)   // 根据请求的 Api，执行相应操作
         break;
         
     case 'download':    // 下载歌曲(弃用)
-        $fileurl = getParam('url');  // 链接
-        
+        $fileurl = getParam('url');  // 链接        
         header('location:$fileurl');
         exit();
         break;
@@ -85,8 +84,9 @@ switch($types)   // 根据请求的 Api，执行相应操作
         $id = getParam('id');  // 歌单ID  
         //case 'netease':
             $api = array(
-                'method' => 'POST',
-                'url'    => 'http://music.163.com/api/v6/playlist/detail',
+                'method' => 'GET',
+                'url'    => 'http://music.163.com/api/playlist/detail?id='.$id,
+                //'url'    => 'http://music.163.com/api/v6/playlist/detail',
                 'body'   => array(
                     's'  => '0',
                     'id' => $id,
