@@ -1,100 +1,68 @@
 <?php
-/**************************************************
- * MKOnlinePlayer v2.4
- * 后台音乐数据抓取模块
- * 编写：mengkun(https://mkblog.cn)
- * 时间：2018-3-11
- * 特别感谢 @metowolf 提供的 Meting.php
- *************************************************/
-
-/************ ↓↓↓↓↓ 如果网易云音乐歌曲获取失效，请将你的 COOKIE 放到这儿 ↓↓↓↓↓ ***************/
-$netease_cookie = 'JSESSIONID-WYYY=SYNqOR5NP9K7oeaf8ccV%5C%5CDu9FcjuDXAuEOqqHl0%5C5iXkO1ZcV15Pqm5FK%2FM8KU8h%2B6xG3sNCqf1qmphc6OgrTsGfjgSl3sr5mYcJsQ238IVY%2F8v0mD%2BBMi%2B9d%2BuXb77kY%5CRJegBeWP7Vpx4oJbX2%5CQZip6QjIg8Tf7zY968XJ5YVnfP%3A1606887657751; _iuqxldmzr_=32; _ntes_nnid=bd09511ef1a9c12fba60021ca87428d6,1606885857796; _ntes_nuid=bd09511ef1a9c12fba60021ca87428d6; NMTID=00OtXSBAJ5IC2pKLEGym27IbFDazj0AAAF2IdxcZQ; WM_NI=kBA3tMjJ06hT%2FlQVYIRApf1nqYM%2BMAU3FoMZN77Lc2R%2BmCuSPSI3zgv97Le8jGPNB3XffCLMjr4dLpPBuCfgqz4Ul3A%2BtIouzQlfwH%2F%2F4Vy0UNvODXde%2Fw6tqPLbPCZdUjU%3D; WM_NIKE=9ca17ae2e6ffcda170e2e6eea7f75cf28e9baaf16b90ef8eb7d15b979a8baff54892b88cd9f84993ba9cb1b22af0fea7c3b92aa99e8fd4f747aa9600d7eb60edb49fb7dc43929fc087b466b38783ccd04b97ed8a90d0528ee9f9ade23a92f5a3a4f859948d87d4f96db6e7f9ade834aa99a0afc1399cbaaaa4cf47aaaefc85cf7c949ebba4e56db3a6fcb6ef3983f5bcaaee7fba8fa487f644edf1fcb7fc3c9792bab0c754a8bbe198b580b3908483d3499abc9b8bd837e2a3; WM_TID=AnZvRocL8nRARRRBVUMuPVkCtvXFfTfi; __remember_me=true; MUSIC_U=b5691603abbd91efece7a6baa7d4869f99393f09e8ce759c28163776125645f4390a1722da2336f1c5b95b8230fa47f0825587d179f1e1ace381395bf06ec255; __csrf=860733c4f4e698de2740b0ca62b634b6; ntes_kaola_ad=1';
-/************ ↑↑↑↑↑ 如果网易云音乐歌曲获取失效，请将你的 COOKIE 放到这儿 ↑↑↑↑↑ ***************/
-/**
-* cookie 获取及使用方法见 
-* https://github.com/mengkunsoft/MKOnlineMusicPlayer/wiki/%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%E9%97%AE%E9%A2%98
-* 
-* 更多相关问题可以查阅项目 wiki 
-* https://github.com/mengkunsoft/MKOnlineMusicPlayer/wiki
-* 
-* 如果还有问题，可以提交 issues
-* https://github.com/mengkunsoft/MKOnlineMusicPlayer/issues
-**/
-
+//ini_set("display_errors", "On");
+//error_reporting(E_ALL | E_STRICT);
 
 define('HTTPS', false);    // 如果您的网站启用了https，请将此项置为“true”，如果你的网站未启用 https，建议将此项设置为“false”
 define('DEBUG', true);      // 是否开启调试模式，正常使用时请将此项置为“false”
-//define('CACHE_PATH', 'cache/');     // 文件缓存目录,请确保该目录存在且有读写权限。如无需缓存，可将此行注释掉
 
-/*
- 如果遇到程序不能正常运行，请开启调试模式，然后访问 http://你的网站/音乐播放器地址/api.php ，进入服务器运行环境检测。
- 此外，开启调试模式后，程序将输出详细的运行错误信息，方便定位错误原因。
- 
- 因为调试模式下程序会输出服务器环境信息，为了您的服务器安全，正常使用时请务必关闭调试。
-*/
-
-
-
-/*****************************************************************************************************/
 if(!defined('DEBUG') || DEBUG !== true) error_reporting(0); // 屏蔽服务器错误
-
-require_once('Meting.php');
-
-use Metowolf\Meting;
-
 $source = getParam('source', 'netease');  // 歌曲源
-$API = new Meting($source);
-
-$API->format(true); // 启用格式化功能
-
-if($source == 'kugou' || $source == 'baidu') {
-    define('NO_HTTPS', true);        // 酷狗和百度音乐源暂不支持 https
-} elseif(($source == 'netease') && $netease_cookie) {
-    $API->cookie($netease_cookie);    // 解决网易云 Cookie 失效
-}
-
-// 没有缓存文件夹则创建
-if(defined('CACHE_PATH') && !is_dir(CACHE_PATH)) createFolders(CACHE_PATH);
-
 $types = getParam('types');
 switch($types)   // 根据请求的 Api，执行相应操作
 {
     case 'url':   // 获取歌曲链接
         $id = getParam('id');  // 歌曲ID
-        
-        $data = $API->url($id);
-        
+        $br = 320;
+        //case 'netease':
+            $api = array(
+                'method' => 'GET',
+                'url' => 'http://music.163.com/song/media/outer/url?id='.$id,
+                //'url'    => 'http://music.163.com/api/song/enhance/player/url',
+                'body'   => array(
+                    'ids' => array($id),
+                    'br'  => $br * 1000,
+                ),
+                'encode' => 'netease_AESCBC',
+                'decode' => 'netease_url',
+            );
+        $data = my_exec($api);        
         echojson($data);
         break;
         
     case 'pic':   // 获取歌曲链接
+     	$size = 300;
         $id = getParam('id');  // 歌曲ID
-        
-        $data = $API->pic($id);
-        
+        $url = 'https://p3.music.126.net/'.netease_encryptId($id).'/'.$id.'.jpg?param='.$size.'y'.$size;
+        $data = json_encode(array('url' => $url));        
         echojson($data);
         break;
-    
-    case 'lyric':       // 获取歌词
+    case 'detail':   // 获取歌曲链接
         $id = getParam('id');  // 歌曲ID
-        
-        if(($source == 'netease') && defined('CACHE_PATH')) {
-            $cache = CACHE_PATH.$source.'_'.$types.'_'.$id.'.json';
-            
-            if(file_exists($cache)) {   // 缓存存在，则读取缓存
-                $data = file_get_contents($cache);
-            } else {
-                $data = $API->lyric($id);
-                
-                // 只缓存链接获取成功的歌曲
-                if(json_decode($data)->lyric !== '') {
-                    file_put_contents($cache, $data);
-                }
-            }
-        } else {
-            $data = $API->lyric($id);
-        }
-        
+        $api = array(
+                'method' => 'GET',
+                'url' => 'http://music.163.com/api/song/detail/?id='.$id.'&ids=['.$id.']',
+            );        
+        $data = my_exec($api);               
+        echojson($data);
+        break;
+    case 'lyric':       // 获取歌词
+        $id = getParam('id');  // 歌曲ID 
+        //case 'netease':
+            $api = array(
+                'method' => 'GET',
+                'url'    => 'http://music.163.com/api/song/lyric?os=pc&id='.$id.'&lv=-1&kv=-1&tv=-1',
+                //'url'    => 'http://music.163.com/api/song/lyric',
+                'body'   => array(
+                    'id' => $id,
+                    'os' => 'pc',
+                    'lv' => -1,
+                    'kv' => -1,
+                    'tv' => -1,
+                ),
+                'encode' => 'netease_AESCBC',
+                'decode' => 'netease_lyric',
+            );       
+        $data = my_exec($api);               
         echojson($data);
         break;
         
@@ -109,49 +77,44 @@ switch($types)   // 根据请求的 Api，执行相应操作
         $uid = getParam('uid');  // 用户ID
         
         $url= 'https://music.163.com/api/user/playlist/?offset=0&limit=1001&uid='.$uid;
-        $data = file_get_contents($url);
-        
+        $data = file_get_contents($url);        
         echojson($data);
         break;
         
     case 'playlist':    // 获取歌单中的歌曲
-        $id = getParam('id');  // 歌单ID
-        
-        if(($source == 'netease') && defined('CACHE_PATH')) {
-            $cache = CACHE_PATH.$source.'_'.$types.'_'.$id.'.json';
-            
-            if(file_exists($cache) && (date("Ymd", filemtime($cache)) == date("Ymd"))) {   // 缓存存在，则读取缓存
-                $data = file_get_contents($cache);
-            } else {
-                $data = $API->format(false)->playlist($id);
-                
-                // 只缓存链接获取成功的歌曲
-                if(isset(json_decode($data)->playlist->tracks)) {
-                    file_put_contents($cache, $data);
-                }
-            }
-        } else {
-            $data = $API->format(false)->playlist($id);
-        }
-        
+        $id = getParam('id');  // 歌单ID  
+        //case 'netease':
+            $api = array(
+                'method' => 'POST',
+                'url'    => 'http://music.163.com/api/v6/playlist/detail',
+                'body'   => array(
+                    's'  => '0',
+                    'id' => $id,
+                    'n'  => '1000',
+                    't'  => '0',
+                ),
+                'encode' => 'netease_AESCBC',
+                'format' => 'playlist.tracks',
+            );
+        $data = my_exec($api);     
         echojson($data);
         break;
      
     case 'search':  // 搜索歌曲
-        $s = getParam('name');  // 歌名
+        $keyword = getParam('name');  // 歌名
         $limit = getParam('count', 20);  // 每页显示数量
-        $pages = getParam('pages', 1);  // 页码
-        
-        $data = $API->search($s, [
-            'page' => $pages, 
-            'limit' => $limit
-        ]);
-        
+        $page = getParam('page', 1);  // 页码     
+        $offset =  isset($page) && isset($limit) ? ($page - 1) * $limit : 0;
+        $api = array(
+                'method' => 'GET',
+                'url'    => 'http://music.163.com/api/search/get?s='.urlencode($keyword).'&type=1&limit='.$limit.'&offset='.$offset,
+            );
+        $data = my_exec($api);
         echojson($data);
         break;
         
     default:
-        echo '<!doctype html><html><head><meta charset="utf-8"><title>信息</title><style>* {font-family: microsoft yahei}</style></head><body> <h2>MKOnlinePlayer</h2><h3>Github: https://github.com/mengkunsoft/MKOnlineMusicPlayer</h3><br>';
+        echo '<!doctype html><html><head><meta charset="utf-8"><title>信息</title><style>* {font-family: microsoft yahei}</style></head><body><br>';
         if(!defined('DEBUG') || DEBUG !== true) {   // 非调试模式
             echo '<p>Api 调试模式已关闭</p>';
         } else {
@@ -169,7 +132,26 @@ switch($types)   // 根据请求的 Api，执行相应操作
         
         echo '</body></html>';
 }
+function my_exec($api)
+    {    
 
+        if ($api['method'] == 'GET') {            
+           $data = file_get_contents($api['url']);
+         }
+        return $data;
+    }
+function netease_encryptId($id)
+    {
+        $magic = str_split('3go8&$8*3*3h0k(2)2');
+        $song_id = str_split($id);
+        for ($i = 0; $i < count($song_id); $i++) {
+            $song_id[$i] = chr(ord($song_id[$i]) ^ ord($magic[$i % count($magic)]));
+        }
+        $result = base64_encode(md5(implode('', $song_id), 1));
+        $result = str_replace(array('/', '+'), array('_', '-'), $result);
+
+        return $result;
+    }
 /**
  * 创建多层文件夹 
  * @param $dir 路径
