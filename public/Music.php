@@ -26,12 +26,12 @@ switch($types)   // 根据请求的 Api，执行相应操作
                 'decode' => 'netease_url',
             );
         $data = get_headers($api['url'],1);         
-	$arr = json_encode(array('url' => $data['location']));        
+        $arr = json_encode(array('url' => $data['Location']));
         echojson($arr);
         break;
         
     case 'pic':   // 获取歌曲封面
-     	$size = 300;
+        $size = 300;
         $id = getParam('id');  // 歌曲ID
         $url = 'https://p3.music.126.net/'.netease_encryptId($id).'/'.$id.'.jpg?param='.$size.'y'.$size;
         $data = json_encode(array('url' => $url));        
@@ -168,15 +168,15 @@ function createFolders($dir) {
  * @return 
  */
 function checkfunc($f,$m = false) {
-	if (function_exists($f)) {
-		return '<font color="green">可用</font>';
-	} else {
-		if ($m == false) {
-			return '<font color="black">不支持</font>';
-		} else {
-			return '<font color="red">不支持</font>';
-		}
-	}
+    if (function_exists($f)) {
+        return '<font color="green">可用</font>';
+    } else {
+        if ($m == false) {
+            return '<font color="black">不支持</font>';
+        } else {
+            return '<font color="red">不支持</font>';
+        }
+    }
 }
 
 /**
