@@ -32,18 +32,19 @@ switch($types)   // 根据请求的 Api，执行相应操作
          $arr2[] = explode("=",$value);
         }
         setcookie("$arr2[0][0]", '$arr2[0][1]', $arr2[1][1], $arr2[3][1], "laravel-z9wl-1651779-1304884105.ap-shanghai.run.tcloudbase.com");
-        //setcookie("$arr2[0][0]", '$arr2[0][1]', $arr2[1][1], $arr2[3][1], $arr2[4][1]);
-        header("Location: {$api['url']}");
+        //setcookie("$arr2[0][0]", '$arr2[0][1]', $arr2[1][1], $arr2[3][1], $arr2[4][1]);        
+	$data = json_encode(array('url' => $api['url']));        
+        echojson($data);
         break;
         
-    case 'pic':   // 获取歌曲链接
+    case 'pic':   // 获取歌曲封面
      	$size = 300;
         $id = getParam('id');  // 歌曲ID
         $url = 'https://p3.music.126.net/'.netease_encryptId($id).'/'.$id.'.jpg?param='.$size.'y'.$size;
         $data = json_encode(array('url' => $url));        
         echojson($data);
         break;
-    case 'detail':   // 获取歌曲链接
+    case 'detail':   // 获取歌曲详情
         $id = getParam('id');  // 歌曲ID
         $api = array(
                 'method' => 'GET',
