@@ -86,7 +86,7 @@ switch($types)   // 根据请求的 Api，执行相应操作
         //case 'netease':
             $api = array(
                 'method' => 'GET',
-                'url'    => 'http://music.163.com/api/playlist/detail?id='.$id,
+                'url'    => 'https://music.alvin.cool/api.php?types=playlist&id='.$id,
                 //'url'    => 'http://music.163.com/api/v6/playlist/detail',
                 'body'   => array(
                     's'  => '0',
