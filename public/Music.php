@@ -27,7 +27,7 @@ switch($types)   // 根据请求的 Api，执行相应操作
             );
         $data = get_headers($api['url'],1);         
 	$arr = json_encode(array('url' => $data['location']));        
-        echojson($data);
+        echojson($arr);
         break;
         
     case 'pic':   // 获取歌曲封面
