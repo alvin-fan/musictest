@@ -30,10 +30,9 @@ switch($types)   // 根据请求的 Api，执行相应操作
         $arr2 = array();
         foreach($arr as $value){        
          $arr2[] = explode("=",$value);
-        }
-        setcookie("$arr2[0][0]", '$arr2[0][1]', $arr2[1][1], $arr2[3][1], "laravel-z9wl-1651779-1304884105.ap-shanghai.run.tcloudbase.com");
+        }        
         //setcookie("$arr2[0][0]", '$arr2[0][1]', $arr2[1][1], $arr2[3][1], $arr2[4][1]);        
-	$data = json_encode(array('url' => $api['url']));        
+	$data = json_encode(array('url' => $data['location']));        
         echojson($data);
         break;
         
